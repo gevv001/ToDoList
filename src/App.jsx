@@ -9,11 +9,23 @@ function App() {
     return stored ? JSON.parse(stored) : []
   });
 
-  const [filter, setFilter] = useState('all');
-
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
+
+  const [filter, setFilter] = useState('all');
+
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearch(search);
+    }, 300)
+
+    return () => clearTimeout(handler)
+  }, [search])
+
+  const [sortBy, setSortBy] = useState('desc');
 
   const addTask = (task) => {
     setTasks([task, ...tasks]);
@@ -37,11 +49,28 @@ function App() {
     setTasks((prev) => prev.filter((t) => !t.done))
   }
 
-  const tasksToShow = tasks.filter((t) => {
-    if (filter === 'active') return !t.done;
-    if (filter === 'done') return t.done;
-    return true;
-  })
+  const tasksToShow = tasks
+    .filter((t) => {
+      if (filter === 'active') return !t.done;
+      if (filter === 'done') return t.done;
+      return true;
+    })
+    .filter((t) =>
+      t.title.toLowerCase().includes(search.toLowerCase())
+    ).sort((a, b) => {
+      if (sortBy === 'desc') return b.createdAt - a.createdAt;
+      if (sortBy === 'asc') return a.createdAt - b.createdAt;
+      if (sortBy === 'priority') {
+        const priorityOrder = { High: 3, Medium: 2, Low: 1 };
+        return priorityOrder[b.priority] - priorityOrder[a.priority];
+      }
+      if (sortBy === 'dueDate') {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      }
+      return 0;
+    })
 
   return (
     <div className='min-h-screen p-4 bg-gray-100'>
@@ -79,6 +108,25 @@ function App() {
         >
           Done
         </button>
+
+        <input
+          type="text"
+          placeholder='Search tasks...'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className='border rounded px-2 py-1 flex-1'
+        />
+
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className='border rounded px-2 py-1'
+        >
+          <option value="desc">Created 'newest first'</option>
+          <option value="asc">Created 'oldest first'</option>
+          <option value="priority">Priority 'High → Low'</option>
+          <option value="dueDate">Due Date 'earliest first'</option>
+        </select>
       </div>
 
       <TaskList
