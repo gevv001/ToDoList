@@ -17,7 +17,6 @@ export default function TaskItem({ task, onToggleDone, onDelete, onUpdate }) {
             dueDate: dueDate || null
         })
     }
-    console.log(isEditing);
 
 
     if (isEditing) {
