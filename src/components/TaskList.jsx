@@ -1,6 +1,6 @@
 import TaskItem from "./TaskItem";
 
-export default function TaskList({ tasks, onToggleDone, onDelete }) {
+export default function TaskList({ tasks, onToggleDone, onDelete, onUpdate }) {
     if (tasks.length === 0) {
         return <p className="mt-4 text-gray-500">
             No Tasks Yet!
@@ -15,6 +15,7 @@ export default function TaskList({ tasks, onToggleDone, onDelete }) {
                     task={task}
                     onToggleDone={onToggleDone}
                     onDelete={onDelete}
+                    onUpdate={onUpdate}
                 />
             })}
         </div>

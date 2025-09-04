@@ -25,6 +25,12 @@ function App() {
     setTasks(tasks.filter(t => t.id !== id));
   }
 
+  const updateTask = (id, updated) => {
+    setTasks((prev) =>
+      prev.map((t) => t.id === id ? { ...t, ...updated } : t)
+    )
+  }
+
   return (
     <div className='min-h-screen p-4 bg-gray-100'>
       <h1 className='text-2xl font-bold mb-4'>To-Do List</h1>
@@ -36,6 +42,7 @@ function App() {
         tasks={tasks}
         onToggleDone={toggleDone}
         onDelete={deleteTask}
+        onUpdate={updateTask}
       ></TaskList>
     </div>
   )
